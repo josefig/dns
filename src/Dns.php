@@ -26,7 +26,9 @@ class Dns
         'NAPTR',
     ];
 
-    public function __construct(string $domain, string $nameserver = '')
+
+    public function __construct(string $domain, string $nameserver = '',
+    int $port = NULL)
     {
         if (empty($domain)) {
             throw InvalidArgument::domainIsMissing();
@@ -35,6 +37,8 @@ class Dns
         $this->nameserver = $nameserver;
 
         $this->domain = $this->sanitizeDomainName($domain);
+
+        $this->port = $port;
     }
 
     public function useNameserver(string $nameserver)
@@ -52,6 +56,11 @@ class Dns
     public function getNameserver(): string
     {
         return $this->nameserver;
+    }
+
+    public function getPort(): string
+    {
+        return empty($this->port) ? $this->port : "-p$this->port";
     }
 
     /**
@@ -112,6 +121,7 @@ class Dns
             '+multiline',
             '+noall',
             '+answer',
+            $this->getPort(),
         ]);
 
         $process = new Process($command);
